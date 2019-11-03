@@ -8,12 +8,13 @@ import urllib
 # RMV API token
 from access_token import token
 
-# Station ID of Origin
-from origin import depart_station
+# Station ID of Origin and destionation
+from route import origin, destination
 
 # Elements of RMV query
 request = {"accessId": token,
-           "id": depart_station.station_id,
+           "id": origin.station_id,
+           "direction": destination.station_id,
            "products": "class05",
            "format": "json",
            }
@@ -23,16 +24,7 @@ def perform_query():
     req = urllib.parse.urlencode(request)
     site = "https://www.rmv.de/hapi/departureBoard?" + req
     reply = json.loads(urllib.request.urlopen(site).read())
-    return reply
-
-
-def extract_mean_of_transportation(reply):
-    reply_data = reply["Departure"]
-    reply_sbahn = list(filter(lambda x: x["trainCategory"] == "SBU",
-                              reply_data))
-    sbahn_right_direction = list(filter(lambda x: x["track"] == "2",
-                                        reply_sbahn))
-    return sbahn_right_direction
+    return reply["Departure"]
 
 
 def calculate_time_diffs(relevant_connections):
@@ -52,7 +44,8 @@ def calculate_time_diffs(relevant_connections):
 
 
 def display_result(result):
-    print(result["time"].strftime("%H:%M:%S"))
+    print("Connections from {} to {} at {}:".format(
+        origin.name, destination.name, result["time"].strftime("%H:%M:%S")))
     for c in result["connections"]:
         print("{}\t{}\t{} remaining".format(c["line"],
                                             c["depart"],
@@ -65,9 +58,8 @@ query_every_sec = 90
 while(True):
     if 0 == ctr % query_every_sec:
         reply = perform_query()
-        relevant_connections = extract_mean_of_transportation(reply)
 
-    result = calculate_time_diffs(relevant_connections)
+    result = calculate_time_diffs(reply)
 
     display_result(result)
 
