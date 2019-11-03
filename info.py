@@ -38,4 +38,4 @@ for trains in sbahn_fbound:
     depart = depart.replace(year=dt_now.year, month=dt_now.month,
                             day=dt_now.day,
                             tzinfo=pytz.timezone("Europe/Berlin"))
-    print(trains["name"], trains["rtTime"], depart- dt_now)
+    print(trains["name"], trains["rtTime"], depart - dt_now)
