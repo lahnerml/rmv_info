@@ -20,6 +20,7 @@ request = {"accessId": token,
            }
 
 
+# Query data from RMV
 def perform_query():
     req = urllib.parse.urlencode(request)
     site = "https://www.rmv.de/hapi/departureBoard?" + req
@@ -27,6 +28,7 @@ def perform_query():
     return reply["Departure"]
 
 
+# Calculate time difference and extract relevant infos
 def calculate_time_diffs(relevant_connections):
     dt_now = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin"))
     result = {"time": dt_now, "connections": []}
@@ -43,6 +45,7 @@ def calculate_time_diffs(relevant_connections):
     return result
 
 
+# Print results to screen
 def display_result(result):
     print("Connections from {} to {} at {}:".format(
         origin.name, destination.name, result["time"].strftime("%H:%M:%S")))
