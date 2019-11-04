@@ -33,12 +33,14 @@ def calculate_time_diffs(relevant_connections):
     dt_now = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin"))
     result = {"time": dt_now, "connections": []}
     for conn in relevant_connections:
-        depart = datetime.datetime.strptime(conn["rtTime"], "%H:%M:%S")
-        depart = depart.replace(year=dt_now.year, month=dt_now.month,
-                                day=dt_now.day,
-                                tzinfo=pytz.timezone("Europe/Berlin"))
+        depart = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin"))
+        dep = datetime.datetime.strptime(conn["rtTime"], "%H:%M:%S")
+        depart = depart.replace(hour=dep.hour,
+                                minute=dep.minute,
+                                second=dep.second)
         conn_info = {"line": conn["name"],
                      "depart": conn["rtTime"],
+                     "scheduled": conn["time"],
                      "time_remaining": depart-dt_now}
         result["connections"].append(conn_info)
 
@@ -50,9 +52,8 @@ def display_result(result):
     print("Connections from {} to {} at {}:".format(
         origin.name, destination.name, result["time"].strftime("%H:%M:%S")))
     for c in result["connections"]:
-        print("{}\t{}\t{} remaining".format(c["line"],
-                                            c["depart"],
-                                            str(c["time_remaining"])))
+        print("{}\t{}, (scheduled {})\t{} remaining".format(
+            c["line"], c["depart"], c["scheduled"], str(c["time_remaining"])))
 
 
 ctr = 0
