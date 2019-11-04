@@ -48,9 +48,10 @@ def calculate_time_diffs(relevant_connections):
 
 
 # Print results to screen
-def display_result(result):
-    print("Connections from {} to {} at {}:".format(
-        origin.name, destination.name, result["time"].strftime("%H:%M:%S")))
+def display_result(result, next_query):
+    print("Connections from {} to {} at {}: ({} seconds until next query)"
+          .format(origin.name, destination.name,
+                  result["time"].strftime("%H:%M:%S"), next_query))
     for c in result["connections"]:
         print("{}\t{}, (scheduled {})\t{} remaining".format(
             c["line"], c["depart"], c["scheduled"], str(c["time_remaining"])))
@@ -65,7 +66,7 @@ while(True):
 
     result = calculate_time_diffs(reply)
 
-    display_result(result)
+    display_result(result, query_every_sec - ctr)
 
     ctr += sleep_sec
     ctr %= query_every_sec
