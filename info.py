@@ -2,7 +2,7 @@ import datetime
 import json
 import pytz
 import time
-import urllib
+from urllib import parse, request
 
 # Customization:
 # RMV API token
@@ -12,19 +12,19 @@ from access_token import token
 from route import origin, destination
 
 # Elements of RMV query
-request = {"accessId": token,
-           "id": origin.station_id,
-           "direction": destination.station_id,
-           "products": "class05",
-           "format": "json",
-           }
+rmv_request = {"accessId": token,
+               "id": origin.station_id,
+               "direction": destination.station_id,
+               "products": "class05",
+               "format": "json",
+               }
 
 
 # Query data from RMV
 def perform_query():
-    req = urllib.parse.urlencode(request)
+    req = parse.urlencode(rmv_request)
     site = "https://www.rmv.de/hapi/departureBoard?" + req
-    reply = json.loads(urllib.request.urlopen(site).read())
+    reply = json.loads(request.urlopen(site).read())
     return reply["Departure"]
 
 
