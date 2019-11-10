@@ -15,6 +15,7 @@ from route import origin, destination
 rmv_request = {"accessId": token,
                "id": origin.station_id,
                "direction": destination.station_id,
+               "duration": 90,
                "format": "json",
                }
 
