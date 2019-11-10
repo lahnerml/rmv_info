@@ -33,12 +33,17 @@ def calculate_time_diffs(relevant_connections):
     result = {"time": dt_now, "connections": []}
     for conn in relevant_connections:
         depart = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin"))
-        dep = datetime.datetime.strptime(conn["rtTime"], "%H:%M:%S")
+        if "rtTime" in conn:
+            dep = datetime.datetime.strptime(conn["rtTime"], "%H:%M:%S")
+            t = conn["rtTime"]
+        else:
+            dep = datetime.datetime.strptime(conn["time"], "%H:%M:%S")
+            t = conn["time"] + "*"
         depart = depart.replace(hour=dep.hour,
                                 minute=dep.minute,
                                 second=dep.second)
         conn_info = {"line": conn["name"],
-                     "depart": conn["rtTime"],
+                     "depart": t,
                      "scheduled": conn["time"],
                      "time_remaining": depart-dt_now}
         result["connections"].append(conn_info)
