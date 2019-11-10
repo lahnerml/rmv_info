@@ -54,11 +54,11 @@ def calculate_time_diffs(relevant_connections):
 
 # Print results to screen
 def display_result(result, next_query):
-    print("Connections from {} to {} at {}: ({} seconds until next query)"
+    print("Connections from {} to {} at {}: \t(next query: {} seconds)"
           .format(origin.name, destination.name,
                   result["time"].strftime("%H:%M:%S"), next_query))
     for c in result["connections"]:
-        print("{}\t{}, (scheduled {})\t{} remaining".format(
+        print("{}\t{}\t(scheduled {})\t{} remaining".format(
             c["line"], c["depart"], c["scheduled"], str(c["time_remaining"])))
 
 
