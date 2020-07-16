@@ -12,20 +12,26 @@ from access_token import token
 from route import origin, destination
 
 # Elements of RMV query
-rmv_request = {"accessId": token,
-               "id": origin.station_id,
-               "direction": destination.station_id,
-               "duration": 90,
-               "format": "json",
-               }
+rmv_request = [{"accessId": token,
+                "id": origin[0].station_id,
+                "direction": destination[0].station_id,
+                "duration": 90,
+                "format": "json",
+                },
+               {"accessId": token,
+                "id": origin[1].station_id,
+                "direction": destination[1].station_id,
+                "duration": 150,
+                "format": "json",
+                }]
 
 
 # Query data from RMV
 def perform_query():
-    req = parse.urlencode(rmv_request)
-    site = "https://www.rmv.de/hapi/departureBoard?" + req
-    reply = json.loads(request.urlopen(site).read())
-    return reply["Departure"]
+    req = [parse.urlencode(rmv_req) for rmv_req in rmv_request]
+    site = ["https://www.rmv.de/hapi/departureBoard?" + r for r in req]
+    reply = [json.loads(request.urlopen(s).read()) for s in site]
+    return reply
 
 
 # Calculate time difference and extract relevant infos
@@ -53,7 +59,7 @@ def calculate_time_diffs(relevant_connections):
 
 
 # Print results to screen
-def display_result(result, next_query):
+def display_result(origin, destination, result, next_query):
     print("Connections from {} to {} at {}: \t(next query: {} seconds)"
           .format(origin.name, destination.name,
                   result["time"].strftime("%H:%M:%S"), next_query))
@@ -69,9 +75,10 @@ while(True):
     if 0 == ctr % query_every_sec:
         reply = perform_query()
 
-    result = calculate_time_diffs(reply)
+    for i in range(len(reply)):
+        result = calculate_time_diffs(reply[i]["Departure"])
 
-    display_result(result, query_every_sec - ctr)
+        display_result(origin[i], destination[i], result, query_every_sec - ctr)
 
     ctr += sleep_sec
     ctr %= query_every_sec
